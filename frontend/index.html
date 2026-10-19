@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Code Launcher</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.addEventListener('error', function(e) {
+            console.error('[GLOBAL ERROR]', e.message, e.filename, e.lineno, e.colno, e.error);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('[UNHANDLED PROMISE]', e.reason);
+        });
+    </script>
+</head>
+<body>
+    <!-- Background Canvas and Overlays -->
+    <div id="background-container">
+        <div id="gallery-backdrop"></div>
+        <canvas id="aurora-canvas"></canvas>
+        <img id="custom-wallpaper" alt="Custom Wallpaper">
+        <div id="bg-overlay"></div>
+    </div>
+
+    <!-- Cinematic Asymmetric Splash Screen with Diagonal Parting Shutters -->
+    <div id="splash-screen">
+        <!-- Diagonal Split Shutters (разъезжаются наискосок в стороны) -->
+        <div class="splash-shutter shutter-top-left"></div>
+        <div class="splash-shutter shutter-bottom-right"></div>
+        <div class="splash-diagonal-blade"></div>
+
+        <!-- Top Titlebar for Splash Screen -->
+        <div class="splash-top-bar">
+            <div class="splash-status-pill">
+                <span class="splash-status-dot"></span>
+                <span class="splash-pill-text">VIBE CODE STUDIO</span>
+            </div>
+            <div class="splash-win-controls">
+                <button class="win-btn" id="splash-min" title="Свернуть">
+                    <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <button class="win-btn close" id="splash-close" title="Закрыть">
+                    <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Asymmetric Split Content Stage -->
+        <div class="splash-content-wrapper">
+            <!-- Left Column: Typography, Badges & CTA -->
+            <div class="splash-left-hero">
+                <div class="splash-tagline-badge">
+                    <span class="tagline-dot"></span>
+                    <span>DESKTOP ECOSYSTEM</span>
+                </div>
+                
+                <h1 class="splash-main-title">
+                    VIBE <span class="title-highlight">CODE</span>
+                </h1>
+                <p class="splash-sub-heading">LAUNCHER & MOD HUB</p>
+                
+                <p class="splash-desc-text">
+                    Автономная платформа запуска и управления модификациями. Чистая производительность, мгновенный отклик и стильный Liquid Glass интерфейс.
+                </p>
+
+                <div class="splash-action-row">
+                    <button id="splash-enter-btn" class="splash-enter-btn">
+                        <span class="splash-btn-shimmer"></span>
+                        <span class="splash-btn-label">ВОЙТИ В ЛАУНЧЕР</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </button>
+                    <span class="splash-enter-hint">или нажмите <b>Enter</b></span>
+                </div>
+            </div>
+
+            <!-- Right Column: Glowing Square VC Hologram Card -->
+            <div class="splash-right-gyro">
+                <div class="splash-logo-card">
+                    <img src="img/vc_logo.png" alt="Vibe Code Logo" class="splash-vc-image">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div id="app-layout">
+        <!-- Titlebar -->
+        <header id="titlebar">
+            <div class="titlebar-left">
+                <div class="titlebar-logo-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+                </div>
+                <span class="titlebar-title">Vibe Code Launcher</span>
+            </div>
+            <div class="titlebar-actions">
+                <button class="win-btn" id="win-min" title="Свернуть">
+                    <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <button class="win-btn" id="win-max" title="Развернуть">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+                </button>
+                <button class="win-btn close" id="win-close" title="Закрыть">
+                    <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <div id="main-body">
+            <!-- Sidebar -->
+            <aside id="sidebar">
+                <div class="sidebar-top">
+                    <!-- Brand Section -->
+                    <div class="brand-section">
+                        <div class="brand-icon-box">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+                        </div>
+                        <div class="brand-text">
+                            <h1>Vibe Code</h1>
+                            <p>Launcher v1.0</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <nav class="nav-menu">
+                        <div class="nav-item active" id="nav-home">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            <span>Главная</span>
+                        </div>
+                        <div class="nav-item" id="nav-all">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                            <span>Все приложения</span>
+                        </div>
+                        <div class="nav-item" id="nav-favs">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                            <span>Избранное</span>
+                        </div>
+                        <div class="nav-item" id="nav-recents">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>Недавние</span>
+                        </div>
+                        <div class="nav-item" id="nav-settings">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+                            <span>Настройки</span>
+                        </div>
+                    </nav>
+                </div>
+
+                <!-- Sidebar Bottom -->
+                <div class="sidebar-bottom">
+                    <div class="status-badge-card">
+                        <div class="status-indicator">
+                            <span class="status-dot"></span>
+                            <span>Лаунчер активен</span>
+                        </div>
+                        <span class="status-version">v1.0.0</span>
+                    </div>
+
+                    <div class="user-profile-row">
+                        <div class="user-info-left">
+                            <div class="user-avatar">М</div>
+                            <div class="user-details">
+                                <h4>Михаил</h4>
+                                <p>Пользователь</p>
+                            </div>
+                        </div>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Workspace -->
+            <main id="content-area">
+                <!-- Search & Filters -->
+                <div class="search-filter-section">
+                    <div class="search-box-wrapper">
+                        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="search-input" class="search-input" placeholder="Поиск приложений..." autocomplete="off">
+                        <span class="search-shortcut">Ctrl + K</span>
+                    </div>
+
+                    <div class="category-pills" id="category-pills">
+                        <button class="category-pill active" data-category="all">Все</button>
+                        <button class="category-pill" data-category="vibecoding">Вайбкодинг</button>
+                        <button class="category-pill" data-category="web">Веб</button>
+                        <button class="category-pill" data-category="ai">ИИ</button>
+                        <button class="category-pill" data-category="media">Видео и изображения</button>
+                        <button class="category-pill" data-category="games">Игры</button>
+                        <button class="category-pill" data-category="utilities">Утилиты</button>
+                    </div>
+                </div>
+
+                <!-- Section Header -->
+                <div class="section-header-bar">
+                    <div class="section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                        <span>Мои приложения</span>
+                    </div>
+                    <div class="section-controls">
+                        <div class="view-toggle-group">
+                            <button class="view-toggle-btn active" id="view-grid-btn" title="Сетка">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                            </button>
+                            <button class="view-toggle-btn" id="view-list-btn" title="Список">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        <select id="sort-select" class="sort-select">
+                            <option value="name">По названию</option>
+                            <option value="date">По дате открытия</option>
+                            <option value="popular">По частоте</option>
+                        </select>
+                        <button class="add-app-btn" id="add-app-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                            <span>Добавить</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Apps Grid -->
+                <div id="app-grid" class="app-grid"></div>
+
+                <!-- Favorites Sub-section -->
+                <div id="favorites-section" class="sub-section">
+                    <div class="sub-section-title">
+                        <span style="color: #fbbf24;">★</span>
+                        <span>Избранное</span>
+                    </div>
+                    <div id="favorites-row" class="horizontal-card-row"></div>
+                </div>
+
+                <!-- Recents Sub-section -->
+                <div id="recents-section" class="sub-section">
+                    <div class="sub-section-title">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>Недавние</span>
+                    </div>
+                    <div id="recents-row" class="horizontal-card-row"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Right Appearance Drawer ("Внешний вид") -->
+    <aside id="appearance-drawer">
+        <div class="drawer-header">
+            <div class="drawer-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+                <span>Внешний вид</span>
+            </div>
+            <button id="drawer-close-btn" class="drawer-close-btn" title="Закрыть">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Visual Preview Card -->
+        <div class="preview-card-banner">
+            <div class="preview-stars"></div>
+            <div class="preview-aurora-glow"></div>
+            <div class="preview-mountains"></div>
+        </div>
+
+        <!-- Theme Style Selector (Liquid Glass / iOS / Aurora) -->
+        <div class="drawer-section-label">Стиль интерфейса (Тема)</div>
+        <div class="theme-style-grid">
+            <button class="theme-style-btn active" data-theme="liquid-glass">
+                <div class="theme-icon">🫧</div>
+                <span>Liquid Glass</span>
+            </button>
+            <button class="theme-style-btn" data-theme="aurora">
+                <div class="theme-icon">🌌</div>
+                <span>Сияние</span>
+            </button>
+            <button class="theme-style-btn" data-theme="frost">
+                <div class="theme-icon">❄️</div>
+                <span>Иней</span>
+            </button>
+            <button class="theme-style-btn" data-theme="midnight">
+                <div class="theme-icon">🌑</div>
+                <span>Midnight</span>
+            </button>
+        </div>
+
+        <!-- Background Type -->
+        <div class="drawer-section-label">Фон</div>
+        <div class="bg-type-grid">
+            <button class="bg-type-btn" data-bg="aurora">
+                <div class="bg-type-thumb" style="background: linear-gradient(135deg, #0b132b, #1c2541);">🌌</div>
+                <span>Сияние</span>
+            </button>
+            <button class="bg-type-btn" data-bg="gallery">
+                <div class="bg-type-thumb" style="background: linear-gradient(135deg, #1f1d36, #3f3351);">✨</div>
+                <span>Галерея</span>
+            </button>
+            <button class="bg-type-btn active" data-bg="custom">
+                <div class="bg-type-thumb" style="background: linear-gradient(135deg, #182030, #22304d);">📁</div>
+                <span>Свой фон</span>
+            </button>
+        </div>
+        <input type="file" id="wallpaper-file-input" accept="image/*,image/gif,.gif,.webp" style="display:none;">
+
+        <!-- Gallery Presets Section (Active when bgType === 'gallery') -->
+        <div id="gallery-presets-section" style="display: none;">
+            <div class="drawer-section-label">Коллекция фонов</div>
+            <div class="gallery-presets-grid" id="gallery-presets-grid">
+                <div class="gallery-card" data-preset="cyberpunk-neon" title="Киберпанк Неон">
+                    <div class="gallery-thumb" style="background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);">🏙️</div>
+                    <div class="gallery-info">
+                        <span class="gallery-name">Cyberpunk</span>
+                        <span class="gallery-tag">Neon Rain</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-preset="retrowave-sunset" title="Retrowave 80s">
+                    <div class="gallery-thumb" style="background: linear-gradient(135deg, #2b1055, #7597de, #b827fc);">👾</div>
+                    <div class="gallery-info">
+                        <span class="gallery-name">Retrowave</span>
+                        <span class="gallery-tag">Synth Grid</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-preset="cosmic-nebula" title="Космическая Туманность">
+                    <div class="gallery-thumb" style="background: linear-gradient(135deg, #130f40, #30336b, #686de0);">🌌</div>
+                    <div class="gallery-info">
+                        <span class="gallery-name">Nebula</span>
+                        <span class="gallery-tag">Deep Space</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-preset="frost-peaks" title="Ледяные Вершины">
+                    <div class="gallery-thumb" style="background: linear-gradient(135deg, #1e3c72, #2a5298, #6dd5ed);">❄️</div>
+                    <div class="gallery-info">
+                        <span class="gallery-name">Frost Peak</span>
+                        <span class="gallery-tag">Pure Cold</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-preset="lofi-sunset" title="Lo-Fi Закат">
+                    <div class="gallery-thumb" style="background: linear-gradient(135deg, #42275a, #734b6d, #bdc3c7);">🌅</div>
+                    <div class="gallery-info">
+                        <span class="gallery-name">Lo-Fi Dusk</span>
+                        <span class="gallery-tag">Chill Vibe</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-preset="oled-void" title="Глубокая Бездна OLED">
+                    <div class="gallery-thumb" style="background: radial-gradient(circle, #101015 0%, #000000 100%);">🌑</div>
+                    <div class="gallery-info">
+                        <span class="gallery-name">OLED Void</span>
+                        <span class="gallery-tag">True Black</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-preset="liquid-prism" title="Жидкая Призма">
+                    <div class="gallery-thumb" style="background: linear-gradient(135deg, #1f4037, #99f2c8);">🫧</div>
+                    <div class="gallery-info">
+                        <span class="gallery-name">Liquid Prism</span>
+                        <span class="gallery-tag">iOS 26 Wave</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-preset="emerald-aurora" title="Северное Сияние">
+                    <div class="gallery-thumb" style="background: linear-gradient(135deg, #051923, #003554, #00a6fb);">🌲</div>
+                    <div class="gallery-info">
+                        <span class="gallery-name">Aurora Pine</span>
+                        <span class="gallery-tag">Night Mist</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aurora Color Variations -->
+        <div class="drawer-section-label" id="aurora-variation-section">Вариация сияния</div>
+        <div class="color-variation-row" id="aurora-variation-row">
+            <div class="color-dot palette-dot active" data-palette="classic" style="background: #10b981;" title="Северное сияние"></div>
+            <div class="color-dot palette-dot" data-palette="violet" style="background: #a855f7;" title="Космический фиолетовый"></div>
+            <div class="color-dot palette-dot" data-palette="cyan" style="background: #06b6d4;" title="Арктический бирюзовый"></div>
+            <div class="color-dot palette-dot" data-palette="emerald" style="background: #059669;" title="Изумрудный"></div>
+            <div class="color-dot palette-dot" data-palette="rose" style="background: #ec4899;" title="Розовая туманность"></div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="slider-group">
+            <div class="slider-item">
+                <div class="slider-label-row">
+                    <span>Затемнение фона</span>
+                    <span id="dimming-val" class="slider-value">35%</span>
+                </div>
+                <input type="range" id="dimming-slider" min="0" max="95" value="35">
+            </div>
+
+            <div class="slider-item">
+                <div class="slider-label-row">
+                    <span>Прозрачность карточек</span>
+                    <span id="opacity-val" class="slider-value">70%</span>
+                </div>
+                <input type="range" id="opacity-slider" min="5" max="100" value="70">
+            </div>
+
+            <div class="slider-item">
+                <div class="slider-label-row">
+                    <span>Размытие фона (Blur)</span>
+                    <span id="blur-val" class="slider-value">24px</span>
+                </div>
+                <input type="range" id="blur-slider" min="0" max="50" value="24">
+            </div>
+        </div>
+
+        <!-- Accent Color Swatches -->
+        <div class="drawer-section-label">Акцентный цвет</div>
+        <div class="color-variation-row">
+            <div class="color-dot accent-dot active" data-color="#ffffff" style="background: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8);" title="Белое стекло"></div>
+            <div class="color-dot accent-dot" data-color="#38bdf8" style="background: #38bdf8;" title="Ледяной голубой"></div>
+            <div class="color-dot accent-dot" data-color="#8b5cf6" style="background: #8b5cf6;" title="Фиолетовый"></div>
+            <div class="color-dot accent-dot" data-color="#10b981" style="background: #10b981;" title="Изумрудный"></div>
+            <div class="color-dot accent-dot" data-color="#f472b6" style="background: #f472b6;" title="Сакура"></div>
+            <div class="color-dot accent-dot" data-color="#fb923c" style="background: #fb923c;" title="Закат"></div>
+        </div>
+
+        <!-- Toggles -->
+        <div class="toggle-group">
+            <div class="toggle-row">
+                <span>Плавные анимации</span>
+                <label class="switch">
+                    <input type="checkbox" id="anim-toggle" checked>
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <span>Режим уменьшенного движения</span>
+                <label class="switch">
+                    <input type="checkbox" id="reduced-motion-toggle">
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- ASMR Sound Controls -->
+        <div class="drawer-section-label">Звуковые эффекты (ASMR)</div>
+        <div class="toggle-group" style="margin-bottom: 12px;">
+            <div class="toggle-row">
+                <span>Звуки интерфейса</span>
+                <label class="switch">
+                    <input type="checkbox" id="sound-toggle" checked>
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="slider-group" style="margin-bottom: 20px;">
+            <div class="slider-item">
+                <div class="slider-label-row">
+                    <span>Громкость звуков</span>
+                    <span id="sound-val" class="slider-value">60%</span>
+                </div>
+                <input type="range" id="sound-slider" min="0" max="100" value="60">
+            </div>
+        </div>
+
+        <button id="reset-settings-btn" class="reset-settings-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span>Сбросить настройки</span>
+        </button>
+    </aside>
+
+    <!-- App Details & Installer Modal GUI -->
+    <div id="app-detail-modal" class="modal-overlay">
+        <div class="modal-card detail-modal-card">
+            <div class="detail-modal-header">
+                <div class="detail-app-badge" id="modal-app-icon-badge"></div>
+                <div class="detail-app-header-info">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <h2 id="modal-app-name">KeyCast & CPS Radar</h2>
+                        <span class="version-tag" id="modal-app-version">v1.2.0</span>
+                    </div>
+                    <div class="detail-app-meta-row">
+                        <span class="meta-tag" id="modal-app-category">Игры</span>
+                        <span class="meta-tag" id="modal-app-size">34.7 MB</span>
+                        <span class="meta-tag status-tag" id="modal-app-status-badge">🟢 Установлено</span>
+                    </div>
+                </div>
+                <button id="detail-modal-close" class="drawer-close-btn" title="Закрыть">✕</button>
+            </div>
+            
+            <div class="detail-modal-body">
+                <div class="detail-section">
+                    <h4>О модификации</h4>
+                    <p id="modal-app-full-desc" class="detail-desc-text"></p>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Возможности и особенности</h4>
+                    <ul id="modal-app-features-list" class="detail-features-list"></ul>
+                </div>
+
+                <div id="modal-install-progress-box" class="install-progress-box" style="display: none;">
+                    <div class="install-progress-label">
+                        <span id="install-progress-text">Установка модификации...</span>
+                        <span id="install-progress-percent">0%</span>
+                    </div>
+                    <div class="install-progress-bar">
+                        <div id="install-progress-fill" class="install-progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-modal-footer">
+                <div class="footer-left-actions">
+                    <button id="modal-uninstall-btn" class="btn-danger-glass" style="display: none;">
+                        <span>🗑️ Удалить</span>
+                    </button>
+                    <button id="modal-explore-btn" class="btn-secondary-glass" style="display: none;">
+                        <span>📁 В папке</span>
+                    </button>
+                </div>
+                <button id="modal-action-btn" class="btn-primary-glow">
+                    <span>📥 Установить</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Custom App Modal Dialog -->
+    <div id="add-app-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Добавить приложение в лаунчер</h3>
+                <button id="modal-cancel-btn" style="background:none; border:none; color:#94a3b8; cursor:pointer;">✕</button>
+            </div>
+            <form id="add-app-form">
+                <div class="form-group">
+                    <label>Название приложения</label>
+                    <input type="text" id="app-name-input" class="form-input" placeholder="Например: My Game, Code Editor" required>
+                </div>
+                <div class="form-group">
+                    <label>Путь к файлу (.exe / .lnk) или веб-адрес (URL)</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="app-path-input" class="form-input" style="flex:1;" placeholder="C:\path\to\app.exe или https://..." required>
+                        <button type="button" id="browse-file-btn" class="btn-secondary" style="padding:0 12px;">Обзор...</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="app-category-select" class="form-input">
+                        <option value="vibecoding">Вайбкодинг</option>
+                        <option value="web">Веб</option>
+                        <option value="ai">ИИ</option>
+                        <option value="media">Видео и изображения</option>
+                        <option value="games">Игры</option>
+                        <option value="utilities" selected>Утилиты</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Краткое описание (необязательно)</label>
+                    <input type="text" id="app-desc-input" class="form-input" placeholder="Пара слов о назначении...">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-primary">Добавить в лаунчер</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/icons.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/aurora.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
